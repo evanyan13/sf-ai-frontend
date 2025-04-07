@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, Suspense } from "react"
 import {
     ReactFlow,
     ReactFlowProvider,
@@ -15,6 +15,7 @@ import {
 } from "@xyflow/react"
 import Dagre from "@dagrejs/dagre"
 import ProfileNode from "./profile-node"
+import CustomEdge from "./custom-edge"
 import { useSearchParams } from "next/navigation"
 import { BASE_API_URL } from "@/app/constant"
 
@@ -22,6 +23,10 @@ import "@xyflow/react/dist/style.css"
 
 const nodeTypes = {
     profileNode: ProfileNode,
+}
+
+const edgeTypes = {
+    customEdge: CustomEdge,
 }
 
 const initialNodes = [
@@ -46,8 +51,8 @@ const initialNodes = [
 ]
 
 const initialEdges = [
-    { id: "node-1-node-2", source: "node-1", target: "node-2" },
-    { id: "node-2-node-3", source: "node-2", target: "node-3" },
+    { id: "node-1-node-2", source: "node-1", target: "node-2", type: "customEdge" },
+    { id: "node-2-node-3", source: "node-2", target: "node-3", type: "customEdge" },
 ]
 
 const nodeColor = (node) => {
@@ -113,8 +118,14 @@ const getLayoutedElements = (nodes, edges, options = { direction: "TB" }) => {
 }
 
 const fetchCofData = async (query) => {
+    console.log("Fetching data for query:", JSON.stringify({ query }))
+    // const isExploded = true;
+    const isExploded = false;
+
     try {
-        const response = await fetch(BASE_API_URL + "queries_to_graph", {
+        const urlEndpoint = isExploded ? "queries_to_graph" : "queries_to_graph_v2"
+
+        const response = await fetch(BASE_API_URL + urlEndpoint, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -150,7 +161,7 @@ const positionNodesInGrid = (nodes, columns = 3, startX = 50, startY = 50, xGap 
     });
 };
 
-function AnalysisFlowContent({ query }) {
+function AnalysisFlowContentInner({ query }) {
     const { fitView } = useReactFlow()
     const [nodes, setNodes] = useState(initialNodes)
     const [edges, setEdges] = useState(initialEdges)
@@ -162,7 +173,10 @@ function AnalysisFlowContent({ query }) {
 
     const onEdgesChangeHandler = useCallback((changes) => setEdges((eds) => applyEdgeChanges(changes, eds)), [])
 
-    const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [])
+    const onConnect = useCallback(
+        (params) => setEdges((eds) => addEdge({ ...params, type: "customEdge" }, eds)),
+        []
+    )
 
     // Apply layout with the current direction
     const applyLayout = useCallback(() => {
@@ -305,7 +319,7 @@ function AnalysisFlowContent({ query }) {
                 onConnect={onConnect}
                 fitView
                 nodeTypes={nodeTypes}
-                defaultEdgeOptions={{ type: 'smart' }}
+                edgeTypes={edgeTypes}
             >
                 <Background />
                 <Controls />
@@ -337,14 +351,29 @@ function AnalysisFlowContent({ query }) {
 }
 
 // Create a wrapper component that includes the ReactFlowProvider
-export default function AnalysisFlow() {
+function AnalysisFlowContent() {
     const searchParams = useSearchParams()
     const query = searchParams.get("query")
 
     return (
         <ReactFlowProvider>
-            <AnalysisFlowContent query={query} />
+            <AnalysisFlowContentInner query={query} />
         </ReactFlowProvider>
+    )
+}
+
+export default function AnalysisFlow() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                    <p>Loading...</p>
+                </div>
+            </div>
+        }>
+            <AnalysisFlowContent />
+        </Suspense>
     )
 }
 

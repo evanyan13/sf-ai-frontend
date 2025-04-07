@@ -21,7 +21,7 @@ export default function ProfileNode({ data }) {
 
     return (
         <>
-            <div>
+            <div style={{ minWidth: '220px' }}>
                 <Card className="w-full max-w-xs rounded-xl overflow-hidden shadow-xl">
                     {/* Top Section with Background */}
                     <div className={`h-18 ${getBgColor()}`}></div>
