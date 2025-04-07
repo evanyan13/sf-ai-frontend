@@ -38,7 +38,7 @@ export default function Home() {
     // Filter out empty values
     const entities = Object.entries(values)
       .filter(([_, value]) => value && value.trim() !== "")
-      .map(([key, value]) => (value.trim()))
+      .map(([key, value]) => ({ type: key, name: value.trim() }))
 
     if (entities.length > 0) {
       // Encode the array as a JSON string in the URL
