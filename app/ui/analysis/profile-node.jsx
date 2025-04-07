@@ -8,7 +8,7 @@ export default function ProfileNode({ data }) {
 
     const getBgColor = () => {
         switch (type) {
-            case 'individual':
+            case 'person':
                 return 'bg-blue-400';
             case 'company':
                 return 'bg-green-400';
@@ -29,13 +29,13 @@ export default function ProfileNode({ data }) {
 
                     {/* Profile Picture - Positioned to overlap the background */}
                     <div className="flex justify-center -mt-12">
-                        <div className="relative w-24 h-24 border-4 border-white rounded-full overflow-hidden">
+                        <div className="relative w-24 h-24 border-4 border-white rounded-full overflow-hidden bg-white flex items-center justify-center">
                             <Image
                                 src={`/profile-${type}.png`}
-                                alt="Profile picture"
+                                alt="Profile"
                                 width={96}
                                 height={96}
-                                className="object-cover"
+                                className="w-full h-full object-cover"
                             />
                         </div>
                     </div>
