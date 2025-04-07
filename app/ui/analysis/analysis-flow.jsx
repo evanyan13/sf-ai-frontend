@@ -69,7 +69,7 @@ const transformNodeDate = (nodes) => {
 
 const fetchCofData = async (query) => {
     try {
-        const response = await fetch(BASE_API_URL + 'query_to_graph', {
+        const response = await fetch(BASE_API_URL + 'queries_to_graph', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -82,6 +82,7 @@ const fetchCofData = async (query) => {
         }
 
         const data = await response.json();
+        console.log('Fetched data:', data); // Debugging line
         return data;
     } catch (error) {
         console.error('Error fetching data:', error);

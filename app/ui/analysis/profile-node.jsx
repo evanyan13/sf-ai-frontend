@@ -42,10 +42,11 @@ export default function ProfileNode({ data }) {
 
                     {/* User Info */}
                     <CardContent className="pt-4 pb-6 text-center">
-                        <div className="mb-6">
+                        <div className="mb-6 flex flex-col items-center">
                             <h2 className="text-xl font-semibold inline-flex items-center gap-2">
                                 {name}
                             </h2>
+                            <span className={`px-3 py-1 inline-block rounded-full text-white font-bold ${getBgColor()}`}>{type}</span>
                         </div>
                     </CardContent>
                 </Card>
